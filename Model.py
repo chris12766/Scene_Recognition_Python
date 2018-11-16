@@ -13,7 +13,9 @@ image = np.array(image, dtype=np.uint8)
 image = resize(image, (224, 224))
 image = np.expand_dims(image, 0)
 '''
+print("start")
 model = VGG16_Places365(weights='places')
+print("done")
 '''
 predictions_to_return = 5
 preds = model.predict(image)[0]

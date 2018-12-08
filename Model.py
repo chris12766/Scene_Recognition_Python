@@ -14,6 +14,9 @@ import collections
 import keras.callbacks
 
 
+# pre-trained weights
+VGG_weights_path = "/home/chris/Downloads/vgg16-places.h5"
+
 #pretrained network works with this image size
 img_width = 224
 img_height = 224
@@ -42,8 +45,9 @@ test_data_dir = "/home/chris/Desktop/CW_data/testing"
 
 def create_model():
     # pretrained load model
-    vgg16 = VGG16_Places365(weights='places')
+    vgg16 = VGG16_Places365(weights_path=VGG_weights_path)
     model = Sequential()
+    # add all layers except the last one that does classification
     for layer in vgg16.layers[:-1]:
         model.add(layer)
 

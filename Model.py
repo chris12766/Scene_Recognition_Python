@@ -140,7 +140,6 @@ def load_images(test_data_dir):
     return image_id_to_pixels
 
 
-####RESCALE
 def predict(weights_path, test_data_dir):
     model = load_treained_model(weights_path)
     image_id_to_pixels = load_images(test_data_dir)

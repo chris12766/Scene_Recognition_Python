@@ -68,13 +68,14 @@ def train_model():
     augment_data_gen = ImageDataGenerator(
         data_format='channels_last',
         brightness_range=[0.5,1.5],
-        width_shift_range=0.2, 
-        height_shift_range=0.2, 
-        rescale=1. / 255,
-        fill_mode='nearest',
+        # width_shift_range=0.2, 
+        # height_shift_range=0.2, 
+        # rescale=1. / 255,
+        # fill_mode='nearest',
         shear_range=0.2,
         zoom_range=0.2,
-        horizontal_flip=True)
+        horizontal_flip=True
+        )
     #default conversion to rgb
     train_generator = augment_data_gen.flow_from_directory(
             train_data_dir,
@@ -84,7 +85,7 @@ def train_model():
             class_mode='categorical')
 
     #for validation only do rescaling as augmentation
-    simple_data_gen = ImageDataGenerator(rescale=1. / 255)
+    simple_data_gen = ImageDataGenerator()
     val_generator = simple_data_gen.flow_from_directory(
         val_data_dir,
         target_size=(img_width, img_height),
@@ -119,7 +120,7 @@ def train_model():
         validation_data=val_generator,
         validation_steps=num_val_samples // batch_size)
 
-    model.save_weights('weights.h5')
+    model.save_weights('weights_part_aug_shear.h5')
 
 
 def load_treained_model(weights_path):
@@ -127,7 +128,7 @@ def load_treained_model(weights_path):
     model.load_weights(weights_path)
     return model
 
-
+#return a dictionary from image ID to pixels 2d array
 def load_images(test_data_dir):
     images = []
     image_ids = []
@@ -158,4 +159,4 @@ def predict(weights_path, test_data_dir):
     
 
 
-predict(weights_path, test_data_dir)
+train_model()

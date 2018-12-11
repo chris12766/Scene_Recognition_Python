@@ -39,7 +39,7 @@ class_names = sorted(class_names)
 id_to_class_name = dict(zip(range(len(class_names)), class_names))
 
 
-weights_path = "/home/chris/Desktop/Scene_Recognition_Python/weights.h5"
+weights_path = "/home/chris/Desktop/Scene_Recognition_Python/weights_part_aug_shear.h5"
 test_data_dir = "/home/chris/Desktop/CW_data/testing"
 
 
@@ -159,4 +159,4 @@ def predict(weights_path, test_data_dir):
     
 
 
-train_model()
+predict(weights_path,test_data_dir)

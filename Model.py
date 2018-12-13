@@ -15,6 +15,8 @@ import keras.callbacks
 
 
 # pre-trained weights
+# download link:
+# https://github.com/GKalliatakis/Keras-VGG16-places365/releases/download/v1.0/vgg16-places365_weights_tf_dim_ordering_tf_kernels.h5
 VGG_weights_path = "/home/chris/Downloads/vgg16-places.h5"
 
 #pretrained network works with this image size
@@ -23,14 +25,15 @@ img_height = 224
 
 num_classes = 15
 
-train_data_dir = "/home/chris/Desktop/CW_data/training/training"
-val_data_dir = "/home/chris/Desktop/CW_data/validation"
+train_data_dir = "/home/chris/Desktop/CW_data/training/training" #80% of all labelled data
+val_data_dir = "/home/chris/Desktop/CW_data/validation" #20% of all labelled data
+all_train_data_dir = "/home/chris/Desktop/CW_data/all_training" #all labelled data
 
 # training parameters
 batch_size = 10
 num_train_samples = num_classes * 80 
 num_val_samples = num_classes * 20 
-num_epochs = 10000
+num_epochs = 26
 augment_data_dir = "/home/chris/Desktop/CW_data/augmented_data"
 
 #create dictionary to get class labels
@@ -39,7 +42,7 @@ class_names = sorted(class_names)
 id_to_class_name = dict(zip(range(len(class_names)), class_names))
 
 
-weights_path = "/home/chris/Desktop/Scene_Recognition_Python/weights_part_aug_shear.h5"
+weights_path = "/home/chris/Desktop/Scene_Recognition_Python/for_predictions.h5"
 test_data_dir = "/home/chris/Desktop/CW_data/testing"
 
 
@@ -78,19 +81,19 @@ def train_model():
         )
     #default conversion to rgb
     train_generator = augment_data_gen.flow_from_directory(
-            train_data_dir,
+            all_train_data_dir,
             shuffle=True,
             target_size=(img_width, img_height), 
             batch_size=batch_size,
             class_mode='categorical')
 
     #for validation only do rescaling as augmentation
-    simple_data_gen = ImageDataGenerator()
-    val_generator = simple_data_gen.flow_from_directory(
-        val_data_dir,
-        target_size=(img_width, img_height),
-        batch_size=batch_size,
-        class_mode='categorical')
+    # simple_data_gen = ImageDataGenerator()
+    # val_generator = simple_data_gen.flow_from_directory(
+    #     val_data_dir,
+    #     target_size=(img_width, img_height),
+    #     batch_size=batch_size,
+    #     class_mode='categorical')
 
     model = create_model()
 
@@ -100,12 +103,12 @@ def train_model():
 	    write_graph=True, write_images=True)
 
     early_stop = keras.callbacks.EarlyStopping(
-	    monitor='val_loss',	min_delta=0,
+	    monitor='loss',	min_delta=0,
 	    patience=7, verbose=0,
 	    mode='auto',
 	    restore_best_weights=True)
 
-    reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss',
+    reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='loss',
      factor=0.1, patience=5, verbose=0, mode='auto',
      min_delta=0.0001, cooldown=0, min_lr=0)
 
@@ -117,10 +120,11 @@ def train_model():
         steps_per_epoch=num_train_samples // batch_size,
         epochs=num_epochs,
         callbacks=[reduce_lr,early_stop,tensorboard],
-        validation_data=val_generator,
-        validation_steps=num_val_samples // batch_size)
+        # validation_data=val_generator,
+        # validation_steps=num_val_samples // batch_size
+        )
 
-    model.save_weights('weights_part_aug_shear.h5')
+    model.save_weights('for_predictions.h5')
 
 
 def load_treained_model(weights_path):
@@ -159,4 +163,4 @@ def predict(weights_path, test_data_dir):
     
 
 
-predict(weights_path,test_data_dir)
+predict(weights_path, test_data_dir)
